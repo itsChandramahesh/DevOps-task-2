@@ -2,19 +2,19 @@ pipeline {
     agent any
 
     environment {
-        DEPLOY_DIR = "/opt/website"
-        BACKUP_DIR = "/opt/backup"
+        DEPLOY_DIR = "/var/www/html"
+        BACKUP_DIR = "/var/backups/website"
     }
 
     stages {
 
         stage('Clone Code') {
             steps {
-                git 'https://github.com/itsChandramahesh/DevOps-task-2'
+                git 'https://github.com/itsChandramahesh/DevOps-task-2'
             }
         }
 
-        stage('Backup Old Code') {
+        stage('Backup') {
             steps {
                 sh '''
                 mkdir -p $BACKUP_DIR
@@ -25,18 +25,19 @@ pipeline {
             }
         }
 
-        stage('Deploy New Code') {
+        stage('Deploy') {
             steps {
-	    sh '''
+                sh '''
                 rm -rf $DEPLOY_DIR/*
                 cp -r * $DEPLOY_DIR/
                 '''
             }
         }
 
-        stage('Run Website') {
+        stage('Reload Nginx') {
             steps {
-                sh '''
-                echo "Deployment Done ✅"
-
-
+                sh 'sudo systemctl reload nginx'
+            }
+        }
+    }
+}
