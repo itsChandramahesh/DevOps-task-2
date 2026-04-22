@@ -27,7 +27,7 @@ pipeline {
 
         stage('Deploy New Code') {
             steps {
-                sh '''
+	    sh '''
                 rm -rf $DEPLOY_DIR/*
                 cp -r * $DEPLOY_DIR/
                 '''
@@ -38,8 +38,5 @@ pipeline {
             steps {
                 sh '''
                 echo "Deployment Done ✅"
-                '''
-            }
-        }
-    }
-}
+
+
