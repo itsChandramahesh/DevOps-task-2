@@ -1,0 +1,34 @@
+name: Deploy Website
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Deploy to Server via SSH
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          echo "Creating backup..."
+          mkdir -p /var/backups/website
+          if [ -d "/var/www/html" ]; then
+            cp -r /var/www/html /var/backups/website/backup_$(date +%F_%T)
+          fi
+
+          echo "Deploying new code..."
+          rm -rf /var/www/html/*
+          cp -r $GITHUB_WORKSPACE/* /var/www/html/
+
+          echo "Reloading Nginx..."
+          sudo systemctl reload nginx
